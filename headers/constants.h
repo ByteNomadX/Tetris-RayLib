@@ -9,7 +9,6 @@ static const int height = 600;
 static const char* title = "Tetris";
 
 static const int block_size = 24;
-static const int font_size = 32;
 
 static const int count_rows = 20;
 static const int count_cols = 10;
