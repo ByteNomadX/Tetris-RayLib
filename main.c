@@ -128,7 +128,9 @@ void update() {
       exit(0);
     } else if(IsKeyPressed(KEY_ENTER)) {
       pause = false;
-      ResumeMusicStream(music);
+			if(!musicPaused) {
+				ResumeMusicStream(music);
+			}
     } else if(IsKeyPressed(KEY_R)) {
       restartGame();
     } else {
