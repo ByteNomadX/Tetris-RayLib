@@ -123,11 +123,7 @@ void drawDividers() {
   DrawLine(line_x_start, top_panel_y + 160, line_x_end, top_panel_y + 160, DARKGRAY);
 }
 
-void freeButton(Button* button) {
-  MemFree(button);
-}
-
-void drawUI(int score, int lines, int figuresPlaced, Figure nextFigure) {
+void drawGameplayUI(int score, int lines, int figuresPlaced, Figure nextFigure) {
   drawTopPanelBackground();
   drawBottomPanelBackground();
   

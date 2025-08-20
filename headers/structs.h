@@ -28,11 +28,4 @@ typedef struct field {
   int occupiedBlocksCount;
 } Field;
 
-typedef struct Button {
-  Rectangle rec;
-  Color color;
-  char* text;
-  Vector2 padding;
-} Button;
-
 #endif

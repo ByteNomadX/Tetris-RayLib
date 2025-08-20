@@ -22,8 +22,6 @@ static const int fading_time = 44;
 static const int field_pos_x = block_size * 3;
 static const int field_pos_y = block_size * 2;
 
-static const Color FADING_COLOR_ARR[count_cols] = {RED, BLUE, YELLOW, PINK, BLACK, BROWN, VIOLET, PURPLE, PINK, RED};
-
 static const char* figure_i[] = {"1111", "1 1 1 1", NULL};
 static const char* figure_o[] = {"11 11", NULL};
 static const char* figure_t[] = {"111 010", "10 11 10", "010 111", "01 11 01", NULL};
