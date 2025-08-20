@@ -154,7 +154,7 @@ void update() {
       ClearBackground(WHITE); 
 
       drawField(*field);
-      drawUI(score,lines, figuresPlaced, *nextFigure);
+      drawGameplayUI(score,lines, figuresPlaced, *nextFigure);
       drawFigure(*figure, field_pos_y + field->size.y, field_pos_x + field->size.x);
       EndDrawing();
 
@@ -289,7 +289,7 @@ void update() {
     ClearBackground(WHITE); 
 
     drawField(*field);
-    drawUI(score,lines, figuresPlaced, *nextFigure);
+    drawGameplayUI(score,lines, figuresPlaced, *nextFigure);
     drawFigure(*figure, field_pos_y + field->size.y, field_pos_x + field->size.x);
     drawFigurePath(*figure, *field);
     EndDrawing();
