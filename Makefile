@@ -5,8 +5,8 @@ EXEC = tetris
 
 H_DIR = ./headers
 
-INCLUDES ?= -I/usr/local/include
-LIBS ?= -L/usr/local/lib -lraylib
+LIBS := $(shell pkg-config --libs raylib)
+INCLUDES := $(shell pkg-config --cflags raylib)
 
 $(EXEC): $(SRC).o ui.o figure.o field.o
 	$(CC) $(FLAGS) $(SRC).c ui.o figure.o field.o -o $(EXEC) $(INCLUDES) $(LIBS)
