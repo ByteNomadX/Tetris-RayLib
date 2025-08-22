@@ -46,7 +46,7 @@ Run the game:
 
 ## Cleaning
 
-To remove object files and the executable:
+To remove object files:
 ``` bash
 make clean
 ```
