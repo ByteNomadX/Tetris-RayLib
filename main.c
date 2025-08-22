@@ -76,6 +76,8 @@ void initSounds() {
 void initGame() {
   field = initField(width, height, block_size);
   score = 0;
+	lines = 0;
+	figuresPlaced = 0;
   fallingTime = 0.0f;
   rotateFigureTime = 0.0f;
   moveFigureTime = 0.0f;
@@ -138,162 +140,161 @@ void update() {
     }
   }
 
-  while(!WindowShouldClose()) {
-    if(IsKeyPressed(KEY_P)) {
-      pause = true;
-      PauseMusicStream(music);
-      return;
-    }
-    
-    UpdateMusicStream(music);
+	if(IsKeyPressed(KEY_P)) {
+		pause = true;
+		PauseMusicStream(music);
+		return;
+	}
+	
+	UpdateMusicStream(music);
 
-    figure->dir = (Vector2){0,0};
-    
-    if(linesToDelete) {
-      BeginDrawing();
-      ClearBackground(WHITE); 
+	figure->dir = (Vector2){0,0};
+	
+	if(linesToDelete) {
+		BeginDrawing();
+		ClearBackground(WHITE); 
 
-      drawField(*field);
-      drawGameplayUI(score,lines, figuresPlaced, *nextFigure);
-      drawFigure(*figure, field_pos_y + field->size.y, field_pos_x + field->size.x);
-      EndDrawing();
+		drawField(*field);
+		drawGameplayUI(score,lines, figuresPlaced, *nextFigure);
+		drawFigure(*figure, field_pos_y + field->size.y, field_pos_x + field->size.x);
+		EndDrawing();
 
-      lineFadingTime += 1;
+		lineFadingTime += 1;
 
-      if(lineFadingTime % 8 == 0) {
-        fadingColor = ColorToInt(fadingColor) == ColorToInt(RAYWHITE) ? RED : RAYWHITE;
-        for(int i = 0; i < count_rows; i++) {
-          if(linesToDeleteArr[i] > 0) {
-            changeFieldLineColor(field, linesToDeleteArr[i], fadingColor);
-            
-          }
-        }
-      }
+		if(lineFadingTime % 8 == 0) {
+			fadingColor = ColorToInt(fadingColor) == ColorToInt(RAYWHITE) ? RED : RAYWHITE;
+			for(int i = 0; i < count_rows; i++) {
+				if(linesToDeleteArr[i] > 0) {
+					changeFieldLineColor(field, linesToDeleteArr[i], fadingColor);
+					
+				}
+			}
+		}
 
-      if(lineFadingTime >= fading_time) {
-        lineFadingTime = 0;
-        
-        for(int i = 0; i < count_rows; i++) {
-          if(linesToDeleteArr[i] > 0) {
-            removeFieldLine(field, linesToDeleteArr[i]);
-          }
-        }
+		if(lineFadingTime >= fading_time) {
+			lineFadingTime = 0;
+			
+			for(int i = 0; i < count_rows; i++) {
+				if(linesToDeleteArr[i] > 0) {
+					removeFieldLine(field, linesToDeleteArr[i]);
+				}
+			}
 
-        linesToDelete = false;
-        MemFree(linesToDeleteArr);
-      } else {
-        return;
-      }
-    }
+			linesToDelete = false;
+			MemFree(linesToDeleteArr);
+		} else {
+			return;
+		}
+	}
 
-    if(moveFigureTime >= move_figure_delay) {
-      if(IsKeyDown(KEY_LEFT)) {
-        figure->dir = (Vector2){-1, 0};
-        moveFigureTime = 0;
-      } else if(IsKeyDown(KEY_RIGHT)) {
-        figure->dir = (Vector2){1, 0};
-        moveFigureTime = 0;
-      } else if(IsKeyDown(KEY_DOWN)) {
-        figure->dir = (Vector2){0, 1};
-        fallingTime = 0;
-        moveFigureTime = 0;
-      }
-    }
+	if(moveFigureTime >= move_figure_delay) {
+		if(IsKeyDown(KEY_LEFT)) {
+			figure->dir = (Vector2){-1, 0};
+			moveFigureTime = 0;
+		} else if(IsKeyDown(KEY_RIGHT)) {
+			figure->dir = (Vector2){1, 0};
+			moveFigureTime = 0;
+		} else if(IsKeyDown(KEY_DOWN)) {
+			figure->dir = (Vector2){0, 1};
+			fallingTime = 0;
+			moveFigureTime = 0;
+		}
+	}
 
-    if(IsKeyDown(KEY_UP)) {
-      if(rotateFigureTime > switch_figure_delay) {
-        if(rotateFigure(figure, *field) == 1) {
-          PlaySound(figureRotateFailSound);
-        } else {
-          PlaySound(figureMoveSound);
-          rotateFigureTime = 0;
-        }
-      }  
-    }
+	if(IsKeyDown(KEY_UP)) {
+		if(rotateFigureTime > switch_figure_delay) {
+			if(rotateFigure(figure, *field) == 1) {
+				PlaySound(figureRotateFailSound);
+			} else {
+				PlaySound(figureMoveSound);
+				rotateFigureTime = 0;
+			}
+		}  
+	}
 
-    rotateFigureTime += GetFrameTime();
-    moveFigureTime += GetFrameTime();
-    fallingTime += GetFrameTime();
+	rotateFigureTime += GetFrameTime();
+	moveFigureTime += GetFrameTime();
+	fallingTime += GetFrameTime();
 
-    if(fallingTime >= 1.0f) {
-      figure->dir = (Vector2){0, 1};
-      fallingTime = 0;
-    }
+	if(fallingTime >= 1.0f) {
+		figure->dir = (Vector2){0, 1};
+		fallingTime = 0;
+	}
 
-    switch (checkFigureCollision(*figure, *field))
-    {
-    case c_hor_wall_left:
-    case c_hor_wall_right:
-      break;
-    case c_block:
-    case c_down_wall:
-      PlaySound(figurePlacedSound);
-      appendFigureToField(figure, field);
-      freeFigure(figure); 
-      figure = nextFigure;
-      nextFigure = getRandomFigure(field->pos);
+	switch (checkFigureCollision(*figure, *field))
+	{
+	case c_hor_wall_left:
+	case c_hor_wall_right:
+		break;
+	case c_block:
+	case c_down_wall:
+		PlaySound(figurePlacedSound);
+		appendFigureToField(figure, field);
+		freeFigure(figure); 
+		figure = nextFigure;
+		nextFigure = getRandomFigure(field->pos);
 
-      if(checkFigureCollision(*figure, *field) == c_block) {
-        gameOver = true;
-        PlaySound(gameOverSound);
-        return;
-      }
+		if(checkFigureCollision(*figure, *field) == c_block) {
+			gameOver = true;
+			PlaySound(gameOverSound);
+			return;
+		}
 
-      int filledLines = 0;
-      linesToDeleteArr = checkFilledLines(field);
+		int filledLines = 0;
+		linesToDeleteArr = checkFilledLines(field);
 
-      for(int i = 0; i < count_rows; i++) {
-        if(linesToDeleteArr[i] > 0) {
-          filledLines++;
-        }
-      }    
+		for(int i = 0; i < count_rows; i++) {
+			if(linesToDeleteArr[i] > 0) {
+				filledLines++;
+			}
+		}    
 
-      if(filledLines > 0) {
-        switch (filledLines)
-        {
-        case 1:
-          PlaySound(lineClearSingleSound);
-          break;
-        case 2:
-          PlaySound(lineClearDoubleSound);
-          break;
-        case 3:
-          PlaySound(lineClearTripleSound);
-          break;
-        }
-        linesToDelete = true;
-        lines += filledLines;
-        score += filledLines * 100;
-      }
-    
-      figuresPlaced++;
+		if(filledLines > 0) {
+			switch (filledLines)
+			{
+			case 1:
+				PlaySound(lineClearSingleSound);
+				break;
+			case 2:
+				PlaySound(lineClearDoubleSound);
+				break;
+			case 3:
+				PlaySound(lineClearTripleSound);
+				break;
+			}
+			linesToDelete = true;
+			lines += filledLines;
+			score += filledLines * 100;
+		}
+	
+		figuresPlaced++;
 
-      break;
-    case c_none:
-      moveFigure(figure, *field);
-    default:
-      break;
-    }
+		break;
+	case c_none:
+		moveFigure(figure, *field);
+	default:
+		break;
+	}
 
-    if(IsKeyPressed(KEY_M)) {
-      if(musicPaused) {
-        ResumeMusicStream(music);
-      } else {
-        PauseMusicStream(music);
-      }
+	if(IsKeyPressed(KEY_M)) {
+		if(musicPaused) {
+			ResumeMusicStream(music);
+		} else {
+			PauseMusicStream(music);
+		}
 
-      musicPaused = !musicPaused;
-    }
+		musicPaused = !musicPaused;
+	}
 
-    BeginDrawing();
-    ClearBackground(WHITE); 
+	BeginDrawing();
+	ClearBackground(WHITE); 
 
-    drawField(*field);
-    drawGameplayUI(score,lines, figuresPlaced, *nextFigure);
-    drawFigure(*figure, field_pos_y + field->size.y, field_pos_x + field->size.x);
-    drawFigurePath(*figure, *field);
-    EndDrawing();
-  }
+	drawField(*field);
+	drawGameplayUI(score,lines, figuresPlaced, *nextFigure);
+	drawFigure(*figure, field_pos_y + field->size.y, field_pos_x + field->size.x);
+	drawFigurePath(*figure, *field);
+	EndDrawing();
+
 }
 
 int main() {
