@@ -19,38 +19,59 @@ const static int bottom_panel_height = 156;
 const static int bottom_panel_x = width - bottom_panel_width - 100;
 const static int bottom_panel_y = top_panel_y + top_panel_height + 20;
 
+
+typedef enum h_alignment {start, center, end} h_alignment;
+
+void drawText(const char *text, int posX, int posY, int fontSize, Color color, h_alignment alignment) {
+	switch (alignment)
+	{
+	case start:
+		DrawText(text, posX, posY, fontSize, color);
+		break;
+	case center:
+		DrawText(text, posX - MeasureText(text, fontSize) / 2, posY, fontSize, color);
+		break;
+	case end:
+		DrawText(text, posX - MeasureText(text, fontSize), posY, fontSize, color);
+		break;
+	default:
+		break;
+	}
+}
+
 void drawWelcomeScreen() {  
   BeginDrawing();
   ClearBackground(bacgkround_color); 
-  DrawText("TETRIS", width / 2 - MeasureText("TETRIS", font_size_big) / 2, 100, font_size_big, PINK);
-  DrawText("Good game", width - MeasureText("Good game", font_size_mid) - 15, height - 50, font_size_mid, PINK);
-  DrawText("PRESS [ENTER] TO START!", width / 2 - MeasureText("PRESS [ENTER] TO START", font_size_norm) / 2, height / 2, font_size_norm, GREEN);
+	
+  drawText("TETRIS", width / 2, 100, font_size_big, PINK, center);
+  drawText("Good game", width - 10, height - 50, font_size_mid, PINK, end);
+  drawText("PRESS [ENTER] TO START!", width / 2, height / 2, font_size_norm, GREEN, center);
   EndDrawing();
 }
 
 void drawGameOverScreen(int score) {
   BeginDrawing();
   ClearBackground(bacgkround_color); 
-  DrawText("GAME OVER!", width / 2 - MeasureText("GAME OVER!", font_size_mid) / 2, 150, font_size_mid, RED);
+  drawText("GAME OVER!", width / 2, 150, font_size_mid, RED, center);
 
-  DrawText(TextFormat("SCORE: %d", score), width / 2 - MeasureText(TextFormat("SCORE: %d", score), font_size_norm) / 2, 230, font_size_mid, GREEN);
+  drawText(TextFormat("SCORE: %d", score), width / 2, 230, font_size_mid, GREEN, center);
 
-  DrawText("press [ESCAPE] to exit", width / 2 - MeasureText("press [ESCAPE] to exit", font_size_sm) / 2, height / 2, font_size_sm, WHITE);
+  drawText("press [ESCAPE] to exit", width / 2, height / 2, font_size_sm, WHITE, center);
 
-  DrawText("press [ENTER] to restart", width / 2 - MeasureText("press [ENTER] to restart", font_size_sm) / 2, height / 2 + 25, font_size_sm, WHITE);
+  drawText("press [ENTER] to restart", width / 2, height / 2 + 25, font_size_sm, WHITE, center);
   EndDrawing();
 } 
 
 void drawPauseScreen() {
   BeginDrawing();
   ClearBackground(bacgkround_color); 
-  DrawText("PAUSE", width / 2 - MeasureText("PAUSE", font_size_mid) / 2, 150, font_size_mid, RED);
+  drawText("PAUSE", width / 2, 150, font_size_mid, RED, center);
 
-  DrawText("press [ESCAPE] to exit", width / 2 - MeasureText("press [ESCAPE] to exit", font_size_sm) / 2, height / 2, font_size_sm, WHITE);
+  drawText("press [ESCAPE] to exit", width / 2, height / 2, font_size_sm, WHITE, center);
 
-  DrawText("press [ENTER] to continue", width / 2 - MeasureText("press [ENTER] to continue", font_size_sm) / 2, height / 2 + 25, font_size_sm, WHITE);
+  drawText("press [ENTER] to continue", width / 2, height / 2 + 25, font_size_sm, WHITE, center);
 
-  DrawText("press [R] to restart", width / 2 - MeasureText("press [R] to restart", font_size_sm) / 2, height / 2 + 50, font_size_sm, WHITE);
+  drawText("press [R] to restart", width / 2, height / 2 + 50, font_size_sm, WHITE, center);
 
   EndDrawing();
 }
@@ -66,18 +87,15 @@ void drawBottomPanelBackground() {
 }
 
 void drawInfo() {
-   DrawText("Press [P] to pause", bottom_panel_x + bottom_panel_width / 2 - MeasureText("press [P] to pause", font_size_vrysm) / 2, bottom_panel_y + 20, font_size_vrysm, BLACK);
-   DrawText("Press [M] to PLAY/STOP music", bottom_panel_x + bottom_panel_width / 2 - MeasureText("Press [M] to PLAY/STOP music", font_size_vrysm) / 2, bottom_panel_y + 48, font_size_vrysm, BLACK);
-   DrawText("Press [S] to PLAY/STOP sounds", bottom_panel_x + bottom_panel_width / 2 - MeasureText("Press [S] to PLAY/STOP sounds", font_size_vrysm) / 2, bottom_panel_y + 68, font_size_vrysm, BLACK);
-   DrawText("by sHema", bottom_panel_x + bottom_panel_width / 2 - MeasureText("by sHema", font_size_vrysm) / 2, bottom_panel_y + bottom_panel_height - 26, font_size_vrysm, BLACK);
+	drawText("Press [P] to pause", bottom_panel_x + bottom_panel_width / 2, bottom_panel_y + 20, font_size_vrysm, BLACK, center);
+	drawText("Press [M] to PLAY/STOP music", bottom_panel_x + bottom_panel_width / 2, bottom_panel_y + 48, font_size_vrysm, BLACK, center);
+	drawText("Press [S] to PLAY/STOP sounds", bottom_panel_x + bottom_panel_width / 2, bottom_panel_y + 68, font_size_vrysm, BLACK, center);
+	drawText("by ByteNomadX", bottom_panel_x + bottom_panel_width / 2, bottom_panel_y + bottom_panel_height - 26, font_size_vrysm, BLACK, center);
 }
 
 void drawNextFigure(Figure figure) {
   int i;
-  const char* text = "Next";
-  int textSize = MeasureText(text, font_size_norm);
-
-  DrawText(text, (top_panel_x + top_panel_width / 2) - textSize / 2, top_panel_y + 180, font_size_norm, DARKGRAY);
+  drawText("Next", (top_panel_x + top_panel_width / 2), top_panel_y + 180, font_size_norm, DARKGRAY, center);
 
   int maxX = figure.blocks[0].rec.x;
   for (i = 0; i < figure.countBlocks; i++) {
@@ -97,27 +115,6 @@ void drawNextFigure(Figure figure) {
   }
 }
 
-void drawFiguresPlaced(int figuresPlaced) {
-  const char* text = TextFormat("Placed: %d", figuresPlaced);
-  int textSize = MeasureText(text, font_size_norm);
-
-  DrawText(text, (top_panel_x + top_panel_width / 2) - textSize / 2, top_panel_y + 120, font_size_norm, DARKGRAY);
-}
-
-void drawScore(int score) {
-  const char* text = TextFormat("Score: %d", score);
-  int textSize = MeasureText(text, font_size_norm);
-
-  DrawText(text, (top_panel_x + top_panel_width / 2) - textSize / 2, top_panel_y + 20, font_size_norm, DARKGRAY);
-}
-
-void drawLines(int lines) {
-  const char* text = TextFormat("Lines: %d", lines);
-  int textSize = MeasureText(text, font_size_norm);
-
-  DrawText(text, (top_panel_x + top_panel_width / 2) - textSize / 2, top_panel_y + 70, font_size_norm, DARKGRAY);
-}
-
 void drawDividers() {
   int line_x_start = top_panel_x + 10;
   int line_x_end = top_panel_x + top_panel_width - 10;
@@ -131,10 +128,11 @@ void drawGameplayUI(int score, int lines, int figuresPlaced, Figure nextFigure) 
   drawTopPanelBackground();
   drawBottomPanelBackground();
   
-  drawScore(score);
-  drawLines(lines);
-  drawFiguresPlaced(figuresPlaced);
-  drawNextFigure(nextFigure);
+	drawText(TextFormat("Lines: %d", lines), (top_panel_x + top_panel_width / 2), top_panel_y + 70, font_size_norm, DARKGRAY, center);
+	drawText(TextFormat("Placed: %d", figuresPlaced), (top_panel_x + top_panel_width / 2), top_panel_y + 120, font_size_norm, DARKGRAY, center);
+  drawText(TextFormat("Score: %d", score), (top_panel_x + top_panel_width / 2), top_panel_y + 20, font_size_norm, DARKGRAY, center);
+
+	drawNextFigure(nextFigure);
   drawInfo();
   drawDividers();
 }
