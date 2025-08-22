@@ -99,6 +99,7 @@ void initGame() {
 void restartGame() {
   freeFigure(figure);
   freeField(field);
+	SeekMusicStream(music, 0.0f);
 
   initGame();
 }
