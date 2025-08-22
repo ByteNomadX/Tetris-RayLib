@@ -33,7 +33,7 @@ void drawGameOverScreen(int score) {
   ClearBackground(bacgkround_color); 
   DrawText("GAME OVER!", width / 2 - MeasureText("GAME OVER!", font_size_mid) / 2, 150, font_size_mid, RED);
 
-  DrawText(TextFormat("SCORE: %d", score), width / 2 - MeasureText(TextFormat("SCORE: %d", score), font_size_mid) / 2, 230, font_size_mid, GREEN);
+  DrawText(TextFormat("SCORE: %d", score), width / 2 - MeasureText(TextFormat("SCORE: %d", score), font_size_norm) / 2, 230, font_size_mid, GREEN);
 
   DrawText("press [ESCAPE] to exit", width / 2 - MeasureText("press [ESCAPE] to exit", font_size_sm) / 2, height / 2, font_size_sm, WHITE);
 
@@ -75,9 +75,9 @@ void drawInfo() {
 void drawNextFigure(Figure figure) {
   int i;
   const char* text = "Next";
-  int textSize = MeasureText(text, font_size_mid);
+  int textSize = MeasureText(text, font_size_norm);
 
-  DrawText(text, (top_panel_x + top_panel_width / 2) - textSize / 2, top_panel_y + 180, font_size_mid, DARKGRAY);
+  DrawText(text, (top_panel_x + top_panel_width / 2) - textSize / 2, top_panel_y + 180, font_size_norm, DARKGRAY);
 
   int maxX = figure.blocks[0].rec.x;
   for (i = 0; i < figure.countBlocks; i++) {
@@ -101,21 +101,21 @@ void drawFiguresPlaced(int figuresPlaced) {
   const char* text = TextFormat("Placed: %d", figuresPlaced);
   int textSize = MeasureText(text, font_size_norm);
 
-  DrawText(text, (top_panel_x + top_panel_width / 2) - textSize / 2, top_panel_y + 120, font_size_mid, DARKGRAY);
+  DrawText(text, (top_panel_x + top_panel_width / 2) - textSize / 2, top_panel_y + 120, font_size_norm, DARKGRAY);
 }
 
 void drawScore(int score) {
   const char* text = TextFormat("Score: %d", score);
   int textSize = MeasureText(text, font_size_norm);
 
-  DrawText(text, (top_panel_x + top_panel_width / 2) - textSize / 2, top_panel_y + 20, font_size_mid, DARKGRAY);
+  DrawText(text, (top_panel_x + top_panel_width / 2) - textSize / 2, top_panel_y + 20, font_size_norm, DARKGRAY);
 }
 
 void drawLines(int lines) {
   const char* text = TextFormat("Lines: %d", lines);
   int textSize = MeasureText(text, font_size_norm);
 
-  DrawText(text, (top_panel_x + top_panel_width / 2) - textSize / 2, top_panel_y + 70, font_size_mid, DARKGRAY);
+  DrawText(text, (top_panel_x + top_panel_width / 2) - textSize / 2, top_panel_y + 70, font_size_norm, DARKGRAY);
 }
 
 void drawDividers() {
