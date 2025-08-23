@@ -31,12 +31,12 @@ static Figure* nextFigure;
 static Music music;
 static Sound figurePlacedSound;
 static Sound figureRotateSound;
-static Sound figureFallSound;
 static Sound figureRotateFailSound;
 
 static Sound lineClearSingleSound;
 static Sound lineClearDoubleSound;
 static Sound lineClearTripleSound;
+static Sound lineClearQuadSound;
 
 static Sound gameOverSound;
 
@@ -60,15 +60,15 @@ void initMusic() {
 void initSounds() {
   figurePlacedSound = LoadSound("./audio/figure_placed.wav");
 
-  figureFallSound = LoadSound("./audio/figure_fall.mp3");
-  figureRotateFailSound = LoadSound("./audio/rotate_fail.mp3");
-  figureRotateSound = LoadSound("./audio/figure_rotate.mp3");
+  figureRotateFailSound = LoadSound("./audio/rotate_fail.wav");
+  figureRotateSound = LoadSound("./audio/figure_rotate.wav");
 
-  lineClearSingleSound = LoadSound("./audio/line_clear_single.mp3");
-  lineClearDoubleSound = LoadSound("./audio/line_clear_double.mp3");
-  lineClearTripleSound = LoadSound("./audio/line_clear_triple.mp3");
+  lineClearSingleSound = LoadSound("./audio/line_clear_single.wav");
+  lineClearDoubleSound = LoadSound("./audio/line_clear_double.wav");
+  lineClearTripleSound = LoadSound("./audio/line_clear_triple.wav");
+  lineClearQuadSound = LoadSound("./audio/line_clear_quad.wav");
 
-  gameOverSound = LoadSound("./audio/game_over.mp3");
+  gameOverSound = LoadSound("./audio/game_over.wav");
 }
 
 void initGame() {
@@ -260,6 +260,9 @@ void update() {
 				break;
 			case 3:
 				PlaySound(lineClearTripleSound);
+				break;
+			case 4:
+				PlaySound(lineClearQuadSound)
 				break;
 			}
 			linesToDelete = true;

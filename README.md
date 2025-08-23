@@ -66,3 +66,7 @@ make clean
 - Make sure pkg-config is installed. It automatically detects Raylib's include and library paths.
 - The Makefile uses pkg-config to simplify compilation, so users don't need to manually specify library paths.
 - Tested on Linux and macOS.
+
+## Music
+
+- Tetris Theme - Korobeiniki - Arranged for Piano by GregorQuendel -- https://freesound.org/s/719393/ -- License: Attribution NonCommercial 4.0
