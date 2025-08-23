@@ -14,15 +14,14 @@ $(EXEC): $(SRC).o ui.o figure.o field.o
 $(SRC).o: $(SRC).c
 	$(CC) $(FLAGS) -c $(SRC).c $(INCLUDES)
 
-ui.o: ui.c $(H_DIR)/structs.h $(H_DIR)/constants.h
+ui.o: ui.c
 	$(CC) $(FLAGS) -c ui.c $(INCLUDES)
 
-figure.o: figure.c $(H_DIR)/structs.h $(H_DIR)/constants.h $(H_DIR)/enums.h
+figure.o: figure.c 
 	$(CC) $(FLAGS) -c figure.c $(INCLUDES)
 
-field.o: field.c $(H_DIR)/structs.h $(H_DIR)/constants.h
+field.o: field.c 
 	$(CC) $(FLAGS) -c field.c $(INCLUDES)
 
 clean:
 	rm -rf *.o
-

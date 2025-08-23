@@ -1,7 +1,7 @@
-#include "./headers/structs.h"
-#include "./headers/constants.h"
-
-#include <stdio.h>
+#include "./headers/block.h"
+#include "./headers/config.h"
+#include "./headers/figure.h"
+#include "./headers/field.h"
 
 const static int top_panel_width = 300;
 const static int top_panel_height = 300;
@@ -19,6 +19,7 @@ const static int bottom_panel_height = 156;
 const static int bottom_panel_x = width - bottom_panel_width - 100;
 const static int bottom_panel_y = top_panel_y + top_panel_height + 20;
 
+static const Color background_color = (Color){30, 30, 30, 100};
 
 typedef enum h_alignment {start, center, end} h_alignment;
 
@@ -41,7 +42,7 @@ void drawText(const char *text, int posX, int posY, int fontSize, Color color, h
 
 void drawWelcomeScreen() {  
   BeginDrawing();
-  ClearBackground(bacgkround_color); 
+  ClearBackground(background_color); 
 	
   drawText("TETRIS", width / 2, 100, font_size_big, PINK, center);
   drawText("Good game", width - 10, height - 50, font_size_mid, PINK, end);
@@ -51,7 +52,7 @@ void drawWelcomeScreen() {
 
 void drawGameOverScreen(int score) {
   BeginDrawing();
-  ClearBackground(bacgkround_color); 
+  ClearBackground(background_color); 
   drawText("GAME OVER!", width / 2, 150, font_size_mid, RED, center);
 
   drawText(TextFormat("SCORE: %d", score), width / 2, 230, font_size_mid, GREEN, center);
@@ -64,7 +65,7 @@ void drawGameOverScreen(int score) {
 
 void drawPauseScreen() {
   BeginDrawing();
-  ClearBackground(bacgkround_color); 
+  ClearBackground(background_color); 
   drawText("PAUSE", width / 2, 150, font_size_mid, RED, center);
 
   drawText("press [ESCAPE] to exit", width / 2, height / 2, font_size_sm, WHITE, center);

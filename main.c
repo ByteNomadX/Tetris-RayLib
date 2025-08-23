@@ -1,11 +1,8 @@
 #include <raylib.h>
 #include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
 
-#include "./headers/constants.h"
-#include "./headers/structs.h"
-#include "./headers/enums.h"
+#include "./headers/config.h"
 
 #include "./headers/field.h"
 #include "./headers/figure.h"
@@ -32,7 +29,6 @@ static Figure* figure;
 static Figure* nextFigure;
 
 static Music music;
-static Sound figureMoveSound;
 static Sound figurePlacedSound;
 static Sound figureRotateSound;
 static Sound figureFallSound;
@@ -50,6 +46,10 @@ static int* linesToDeleteArr;
 
 static Color fadingColor;
 
+static const int fading_time = 44;
+static const float switch_figure_delay = 0.12f;
+static const float move_figure_delay = 0.05f;
+
 void initMusic() {
   InitAudioDevice();
   music = LoadMusicStream("./audio/Tetris.mp3");
@@ -58,10 +58,8 @@ void initMusic() {
 }
 
 void initSounds() {
-  figureMoveSound = LoadSound("./audio/figure_move.mp3");
-  SetSoundVolume(figureMoveSound, 2);
-  figurePlacedSound = LoadSound("./audio/figure_placed.mp3");
-  SetSoundVolume(figurePlacedSound, 2);
+  figurePlacedSound = LoadSound("./audio/figure_placed.wav");
+
   figureFallSound = LoadSound("./audio/figure_fall.mp3");
   figureRotateFailSound = LoadSound("./audio/rotate_fail.mp3");
   figureRotateSound = LoadSound("./audio/figure_rotate.mp3");
@@ -151,6 +149,7 @@ void update() {
 
 	figure->dir = (Vector2){0,0};
 	
+	// TO DO: make function in field.c to delete lines
 	if(linesToDelete) {
 		BeginDrawing();
 		ClearBackground(WHITE); 
@@ -207,7 +206,7 @@ void update() {
 			if(rotateFigure(figure, *field) == 1) {
 				PlaySound(figureRotateFailSound);
 			} else {
-				PlaySound(figureMoveSound);
+				PlaySound(figureRotateSound);
 				rotateFigureTime = 0;
 			}
 		}  

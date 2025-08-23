@@ -1,9 +1,17 @@
-#include "./headers/constants.h"
-#include "./headers/structs.h"
-#include "./headers/enums.h"
-
-#include <stdio.h>
 #include <stdlib.h>
+#include <raylib.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "./headers/figure.h"
+
+static const char* figure_i[] = {"1111", "1 1 1 1", NULL};
+static const char* figure_o[] = {"11 11", NULL};
+static const char* figure_t[] = {"111 010", "10 11 10", "010 111", "01 11 01", NULL};
+static const char* figure_s[] = {"011 110", "10 11 01", NULL};
+static const char* figure_z[] = {"110 011", "01 11 10", NULL};
+static const char* figure_l[] = {"100 111", "11 10 10", "111 001", "01 01 11", NULL};
+static const char* figure_j[] = {"001 111", "10 10 11", "111 100", "11 01 01", NULL};
 
 int getMapLength(const char* map) {
   char ch = map[0];

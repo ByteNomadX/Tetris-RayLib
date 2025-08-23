@@ -1,8 +1,26 @@
-#include "./enums.h"
-#include "./structs.h"
+#include "./block.h"
+#include "./field.h"
+#include "raylib.h"
 
 #ifndef FIGURE_H
 #define FIGURE_H
+
+typedef enum CollisionType 
+  {c_hor_wall_left, c_hor_wall_right, c_down_wall, c_top_wall, c_block, c_none} 
+CollisionType;
+
+typedef struct Figure {
+  int countBlocks;
+  int mapIndex;
+  int mapLength;
+  int* mapsLength;
+  char** maps;
+  Block* blocks;
+  Vector2 dir;
+  char type;
+} Figure;
+
+
 Figure* createFigure(const char** maps, const char type, int mapsC, Vector2 fieldPos);
 void drawFigure(Figure figure, int maxY, int maxX);
 void moveFigure(Figure* figure, Field field);

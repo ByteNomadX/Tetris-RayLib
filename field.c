@@ -1,7 +1,6 @@
-#include "./headers/constants.h"
-#include "./headers/structs.h"
-
 #include <stdlib.h>
+#include "./headers/field.h"
+#include "./headers/figure.h"
 
 Field* initField(int width, int height, int blockSize) {
   Field* field = malloc(sizeof(Field));
