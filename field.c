@@ -40,7 +40,7 @@ void drawField(Field field) {
     for(i = 0; i < field.occupiedBlocksCount; i++) {
       DrawRectangle(field.occupiedBlocks[i].rec.x, field.occupiedBlocks[i].rec.y, field.occupiedBlocks[i].rec.width, field.occupiedBlocks[i].rec.height, field.occupiedBlocks[i].color);
       
-      DrawRectangleLinesEx(field.occupiedBlocks[i].rec, 1, WHITE);
+      DrawRectangleLinesEx(field.occupiedBlocks[i].rec, 1, LIGHTGRAY);
     }
 }
 
