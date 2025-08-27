@@ -46,7 +46,7 @@ static int* linesToDeleteArr;
 
 static Color fadingColor;
 
-static const int fading_time = 44;
+static const int fading_time = 55;
 static const float switch_figure_delay = 0.12f;
 static const float move_figure_delay = 0.05f;
 
@@ -166,7 +166,6 @@ void update() {
 			for(int i = 0; i < count_rows; i++) {
 				if(linesToDeleteArr[i] > 0) {
 					changeFieldLineColor(field, linesToDeleteArr[i], fadingColor);
-					
 				}
 			}
 		}
@@ -262,7 +261,7 @@ void update() {
 				PlaySound(lineClearTripleSound);
 				break;
 			case 4:
-				PlaySound(lineClearQuadSound)
+				PlaySound(lineClearQuadSound);
 				break;
 			}
 			linesToDelete = true;
