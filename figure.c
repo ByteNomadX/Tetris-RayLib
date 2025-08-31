@@ -201,13 +201,7 @@ Figure* createFigure(const char** maps, const char type, int mapsC, Vector2 fiel
   
   for(i = 0; i < mapsC; i++) {
     figure->mapsLength[i] = getMapLength(maps[i]);
-
-    figure->maps[i] = MemAlloc(sizeof(char) * (figure->mapsLength[i] + 1));
-    if (figure->maps[i] == NULL) {
-      fprintf(stderr, "Ошибка: не удалось выделить память для карты.\n");
-      return NULL;
-    }
-    strcpy(figure->maps[i], maps[i]);
+    figure->maps[i] = maps[i];
   }
 
   figure->type = type;
@@ -288,11 +282,11 @@ Figure* getRandomFigure(Vector2 fieldPos) {
 }
 
 void freeFigure(Figure* figure) {
-  free(figure->blocks);
-  free(figure->maps);
-  free(figure->mapsLength);
-  
-  figure = NULL;
+	if (!figure) return;
+	free(figure->blocks);
+	free(figure->maps);
+	free(figure->mapsLength);
+	free(figure);
 }
 
 void drawFigurePath(Figure figure, Field field) {
@@ -319,6 +313,7 @@ void drawFigurePath(Figure figure, Field field) {
 
   for(i = 0; i < figurePath.countBlocks; i++) {
     if(figure.blocks[i].rec.y >= figurePath.blocks[i].rec.y - block_size) {
+			free(figurePath.blocks);
       return;
     }
   }

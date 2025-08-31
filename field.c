@@ -66,12 +66,11 @@ void removeFieldLine(Field* field, int lineY) {
 }
 
 
-int* checkFilledLines(Field* field) {
+int checkFilledLines(Field* field, int* linesToDelete) {
   int i, j;
   int countBlocksInRow[count_rows];
   int linesY[count_rows];
 
-  int* linesToDelete = MemAlloc(sizeof(int) * count_rows);
   int k = 0;
 
   for(i = 0; i < count_rows; i++)
@@ -95,7 +94,7 @@ int* checkFilledLines(Field* field) {
     }
   }
 
-  return linesToDelete;
+  return k;
 }
 
 void appendFigureToField(Figure* figure, Field* field) {
@@ -106,11 +105,6 @@ void appendFigureToField(Figure* figure, Field* field) {
     field->occupiedBlocks[field->occupiedBlocksCount] = figure->blocks[i];
     field->occupiedBlocksCount++;
   }
-
-  free(figure->blocks);
-  figure->blocks = NULL;  
-  free(figure);
-  figure = NULL; 
 }
 
 void changeFieldLineColor(Field* field, int lineY, Color color) {
@@ -125,4 +119,5 @@ void changeFieldLineColor(Field* field, int lineY, Color color) {
 
 void freeField(Field* field) {
   free(field->occupiedBlocks);
+	free(field);
 }

@@ -42,7 +42,7 @@ static Sound gameOverSound;
 
 static bool linesToDelete;
 static int lineFadingTime;
-static int* linesToDeleteArr;
+static int linesToDeleteArr[count_rows];
 
 static Color fadingColor;
 
@@ -96,6 +96,7 @@ void initGame() {
 
 void restartGame() {
   freeFigure(figure);
+	freeFigure(nextFigure);
   freeField(field);
 	SeekMusicStream(music, 0.0f);
 
@@ -180,7 +181,12 @@ void update() {
 			}
 
 			linesToDelete = false;
-			MemFree(linesToDeleteArr);
+
+			int i = 0;
+			for(i = 0; i < count_rows; i++) {
+				linesToDeleteArr[i] = 0; 
+			}
+
 		} else {
 			return;
 		}
@@ -240,7 +246,7 @@ void update() {
 		}
 
 		int filledLines = 0;
-		linesToDeleteArr = checkFilledLines(field);
+		checkFilledLines(field, linesToDeleteArr);
 
 		for(int i = 0; i < count_rows; i++) {
 			if(linesToDeleteArr[i] > 0) {

@@ -19,7 +19,7 @@ static const int field_pos_y = block_size * 2;
 
 void drawField(Field field);
 Field* initField(int width, int height, int blockSize);
-int* checkFilledLines(Field* field);
+int checkFilledLines(Field* field, int* linesToDelete);
 void removeFieldLine(Field* field, int lineY);
 void freeField(Field* field);
 void changeFieldLineColor(Field* field, int lineY, Color color);
