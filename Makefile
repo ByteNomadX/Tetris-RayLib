@@ -2,11 +2,16 @@ CC = gcc
 FLAGS = -Wall
 SRC = main
 EXEC = tetris
+DEBUG_FLAGS = -g -O0
 
 H_DIR = ./headers
 
 LIBS := $(shell pkg-config --libs raylib)
 INCLUDES := $(shell pkg-config --cflags raylib)
+
+ifeq ($(DEBUG),1) 
+	FLAGS := $(FLAGS) $(DEBUG_FLAGS)
+endif
 
 $(EXEC): $(SRC).o ui.o figure.o field.o
 	$(CC) $(FLAGS) $(SRC).c ui.o figure.o field.o -o $(EXEC) $(INCLUDES) $(LIBS)
