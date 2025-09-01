@@ -46,9 +46,18 @@ static int linesToDeleteArr[count_rows];
 
 static Color fadingColor;
 
+static bool soundsPaused;
+
 static const int fading_time = 55;
 static const float switch_figure_delay = 0.12f;
 static const float move_figure_delay = 0.05f;
+
+
+void playSound(Sound sound) {
+	if(!soundsPaused) {
+		PlaySound(sound);
+	}
+}
 
 void initMusic() {
   InitAudioDevice();
@@ -85,6 +94,7 @@ void initGame() {
 
   pause = false;
   musicPaused = false;
+	soundsPaused = false;
   linesToDelete = false;
 
   lineFadingTime = 0;
@@ -209,9 +219,9 @@ void update() {
 	if(IsKeyDown(KEY_UP)) {
 		if(rotateFigureTime > switch_figure_delay) {
 			if(rotateFigure(figure, *field) == 1) {
-				PlaySound(figureRotateFailSound);
+				playSound(figureRotateFailSound);
 			} else {
-				PlaySound(figureRotateSound);
+				playSound(figureRotateSound);
 				rotateFigureTime = 0;
 			}
 		}  
@@ -233,7 +243,7 @@ void update() {
 		break;
 	case c_block:
 	case c_down_wall:
-		PlaySound(figurePlacedSound);
+		playSound(figurePlacedSound);
 		appendFigureToField(figure, field);
 		freeFigure(figure); 
 		figure = nextFigure;
@@ -241,7 +251,7 @@ void update() {
 
 		if(checkFigureCollision(*figure, *field) == c_block) {
 			gameOver = true;
-			PlaySound(gameOverSound);
+			playSound(gameOverSound);
 			return;
 		}
 
@@ -258,16 +268,16 @@ void update() {
 			switch (filledLines)
 			{
 			case 1:
-				PlaySound(lineClearSingleSound);
+				playSound(lineClearSingleSound);
 				break;
 			case 2:
-				PlaySound(lineClearDoubleSound);
+				playSound(lineClearDoubleSound);
 				break;
 			case 3:
-				PlaySound(lineClearTripleSound);
+				playSound(lineClearTripleSound);
 				break;
 			case 4:
-				PlaySound(lineClearQuadSound);
+				playSound(lineClearQuadSound);
 				break;
 			}
 			linesToDelete = true;
@@ -285,13 +295,11 @@ void update() {
 	}
 
 	if(IsKeyPressed(KEY_M)) {
-		if(musicPaused) {
-			ResumeMusicStream(music);
-		} else {
-			PauseMusicStream(music);
-		}
+		musicPaused ? ResumeMusicStream(music) : PauseMusicStream(music);
 
 		musicPaused = !musicPaused;
+	} else if(IsKeyPressed(KEY_S)) {
+		soundsPaused = !soundsPaused;		
 	}
 
 	BeginDrawing();
