@@ -62,17 +62,19 @@ void setFigureColor(Figure* figure) {
   }
 }
 
-Block* getFigureBlocks(const char* map, int length, Vector2 fieldPos) {
+Block* getFigureBlocks(const char* map, int length, Vector2 startPos) {
   int i, counter, arrIndex;
   char ch;
 
-  int x, y = fieldPos.y;
-  Block* blocks = MemAlloc(sizeof(Block) * length);
+  int x; 
+	int y = startPos.y;
+  
+	Block* blocks = MemAlloc(sizeof(Block) * length);
 
 	int len = strlen(map);
 
   for(i = 0, counter = 0, arrIndex = 0; i < len; i++) {
-    x = block_size * counter + fieldPos.x;
+    x = block_size * counter + startPos.x;
 
     ch = map[i];
     if(ch == '0') {
@@ -99,24 +101,15 @@ Block* getFigureBlocks(const char* map, int length, Vector2 fieldPos) {
 
 int rotateFigure(Figure* figure, Field field) {
   int i, j;
-  int minY, maxY, maxX, minX, x, y;
+  int minY, minX;
   int newBlocksLength;
   int prevMapIndex;
 
   Vector2 oldBlocks[figure->countBlocks];
   Block* newBlocks;
 
-  minY = figure->blocks[0].rec.y;
-  maxY = figure->blocks[0].rec.y;
-  minX = figure->blocks[0].rec.x;
-  maxX = figure->blocks[0].rec.x;
-
   for(i = 0; i < figure->countBlocks; i++) {
     oldBlocks[i] = (Vector2){figure->blocks[i].rec.x, figure->blocks[i].rec.y};
-    if(oldBlocks[i].y < minY) minY = oldBlocks[i].y;
-    if(oldBlocks[i].y > maxY) maxY = oldBlocks[i].y;
-    if(oldBlocks[i].x < minX) minX = oldBlocks[i].x;
-    if(oldBlocks[i].x > maxX) maxX = oldBlocks[i].x;
   }
 
   prevMapIndex = figure->mapIndex;
@@ -126,16 +119,16 @@ int rotateFigure(Figure* figure, Field field) {
   }
 
   newBlocksLength = getMapLength(figure->maps[figure->mapIndex]);
-  newBlocks = getFigureBlocks(figure->maps[figure->mapIndex],
-  newBlocksLength, field.pos); 
 
-  x = ((minX + maxX) / 2) / block_size * block_size - block_size;
-  y = ((minY + maxY) / 2) / block_size * block_size - block_size;
+	minX = figure->blocks[0].rec.x;
+	minY = figure->blocks[0].rec.y;
+	for(i = 1; i < figure->countBlocks; i++) {
+		if(figure->blocks[i].rec.x < minX) minX = figure->blocks[i].rec.x;
+		if(figure->blocks[i].rec.y < minY) minY = figure->blocks[i].rec.y;
+	}
 
-  for(i = 0; i < newBlocksLength; i++) {
-    newBlocks[i].rec.y += ((y / block_size) * block_size);
-    newBlocks[i].rec.x += ((x / block_size) * block_size - field.pos.x);
-  }
+	newBlocks = getFigureBlocks(figure->maps[figure->mapIndex], newBlocksLength, (Vector2){minX, minY});
+	
   // CHECK OTHER BLOCK COLIISION
   for(i = 0; i < newBlocksLength; i++) {
     for(j = 0; j < field.occupiedBlocksCount; j++) {
