@@ -1,5 +1,5 @@
 CC = gcc
-FLAGS = -Wall
+FLAGS = -Wall -Wextra
 SRC = main
 EXEC = tetris
 DEBUG_FLAGS = -g -O0
