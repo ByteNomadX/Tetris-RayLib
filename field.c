@@ -2,6 +2,9 @@
 #include "./headers/field.h"
 #include "./headers/figure.h"
 
+const int field_pos_x = block_size * 3;
+const int field_pos_y = block_size * 2;
+
 Field* initField() {
   Field* field = malloc(sizeof(Field));
 
@@ -18,6 +21,7 @@ Field* initField() {
 
   return field;
 }
+
 void drawField(Field field) {
     int i;
     int blockX, blockY;

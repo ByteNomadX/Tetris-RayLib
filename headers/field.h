@@ -11,11 +11,10 @@ typedef struct Field {
   int occupiedBlocksCount;
 } Field;
 
-static const int count_rows = 20;
-static const int count_cols = 10;
+enum { count_rows = 20, count_cols = 10 };
 
-static const int field_pos_x = block_size * 3;
-static const int field_pos_y = block_size * 2;
+extern const int field_pos_x;
+extern const int field_pos_y;
 
 void drawField(Field field);
 Field* initField();
