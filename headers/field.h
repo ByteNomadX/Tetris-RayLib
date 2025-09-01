@@ -1,7 +1,7 @@
-#include "./block.h"
-
 #ifndef FIELD_H
 #define FIELD_H
+
+#include "./block.h"
 
 typedef struct Field {
   Vector2 size;

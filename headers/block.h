@@ -1,7 +1,7 @@
-#include <raylib.h>
-
 #ifndef BLOCK_H
 #define BLOCK_H
+
+#include <raylib.h>
 
 enum { block_size = 24 };
 

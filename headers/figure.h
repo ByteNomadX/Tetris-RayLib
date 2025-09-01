@@ -1,9 +1,9 @@
+#ifndef FIGURE_H
+#define FIGURE_H
+
 #include "./block.h"
 #include "./field.h"
 #include "raylib.h"
-
-#ifndef FIGURE_H
-#define FIGURE_H
 
 typedef enum CollisionType 
   {c_hor_wall_left, c_hor_wall_right, c_down_wall, c_top_wall, c_block, c_none} 
