@@ -3,9 +3,10 @@
 #include <stdlib.h>
 
 #include "./headers/config.h"
-
-#include "./headers/field.h"
+#include "./headers/bag.h"
 #include "./headers/figure.h"
+#include "./headers/field.h"
+
 #include "./headers/ui.h"
 
 #if defined(PLATFORM_WEB)
@@ -27,6 +28,7 @@ static bool pause;
 static bool musicPaused;
 static Figure* figure;
 static Figure* nextFigure;
+static Bag* bag;
 
 static Music music;
 static Sound figurePlacedSound;
@@ -51,7 +53,6 @@ static bool soundsPaused;
 static const int fading_time = 55;
 static const float switch_figure_delay = 0.12f;
 static const float move_figure_delay = 0.05f;
-
 
 void playSound(Sound sound) {
 	if(!soundsPaused) {
@@ -100,14 +101,19 @@ void initGame() {
   lineFadingTime = 0;
   fadingColor = RED;
 
-  figure = getRandomFigure(field->pos);
-  nextFigure = getRandomFigure(field->pos);
+	bag = MemAlloc(sizeof(Bag));
+	initBag(bag);
+	
+  figure = getNextFigure(bag, field->pos);
+  nextFigure = getNextFigure(bag, field->pos);
 }
 
 void restartGame() {
   freeFigure(figure);
 	freeFigure(nextFigure);
   freeField(field);
+	MemFree(bag);
+
 	SeekMusicStream(music, 0.0f);
 
   initGame();
@@ -242,12 +248,15 @@ void update() {
 	case c_hor_wall_right:
 		break;
 	case c_block:
+
 	case c_down_wall:
 		playSound(figurePlacedSound);
 		appendFigureToField(figure, field);
 		freeFigure(figure); 
+
 		figure = nextFigure;
-		nextFigure = getRandomFigure(field->pos);
+
+		nextFigure = getNextFigure(bag, field->pos);
 
 		if(checkFigureCollision(*figure, *field) == c_block) {
 			gameOver = true;
@@ -314,7 +323,7 @@ void update() {
 }
 
 int main() {
-  InitWindow(width, height, title);
+	InitWindow(width, height, title);
   initMusic();
   initSounds();
   initGame();

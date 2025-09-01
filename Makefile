@@ -13,8 +13,8 @@ ifeq ($(DEBUG),1)
 	FLAGS := $(FLAGS) $(DEBUG_FLAGS)
 endif
 
-$(EXEC): $(SRC).o ui.o figure.o field.o
-	$(CC) $(FLAGS) $(SRC).c ui.o figure.o field.o -o $(EXEC) $(INCLUDES) $(LIBS)
+$(EXEC): $(SRC).o ui.o figure.o field.o bag.o
+	$(CC) $(FLAGS) $(SRC).c ui.o bag.o figure.o field.o -o $(EXEC) $(INCLUDES) $(LIBS)
 
 $(SRC).o: $(SRC).c
 	$(CC) $(FLAGS) -c $(SRC).c $(INCLUDES)
@@ -27,6 +27,9 @@ figure.o: figure.c
 
 field.o: field.c 
 	$(CC) $(FLAGS) -c field.c $(INCLUDES)
+
+bag.o: bag.c
+	$(CC) $(FLAGS) -c bag.c $(INCLUDES)
 
 clean:
 	rm -rf *.o

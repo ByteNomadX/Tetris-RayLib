@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "./headers/bag.h"
 #include "./headers/figure.h"
 
 static const char* figure_map_i[] = {"1111", "1 1 1 1", NULL};
@@ -263,17 +264,18 @@ const char** getFigureMap(FigureType type) {
   }
 }
 
-Figure* getRandomFigure(Vector2 fieldPos) {
-  int length = 0;
-    
-  FigureType type = GetRandomValue(figure_i, figure_z);
-  const char** maps = getFigureMap(type);
+Figure* getNextFigure(Bag* bag, Vector2 fieldPos) {
+	int length = 0;
+
+	FigureType type = getNextFromBag(bag);
+
+	const char** maps = getFigureMap(type);
   while(maps[length] != NULL) {
     length++;
   }
 
-  return createFigure(maps, type, length, fieldPos);
-}
+	return createFigure(maps, type, length, fieldPos);
+}	
 
 void freeFigure(Figure* figure) {
 	if (!figure) return;
