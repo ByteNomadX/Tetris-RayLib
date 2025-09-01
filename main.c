@@ -81,7 +81,7 @@ void initSounds() {
 }
 
 void initGame() {
-  field = initField(width, height, block_size);
+  field = initField();
   score = 0;
 	lines = 0;
 	figuresPlaced = 0;
@@ -289,7 +289,7 @@ void update() {
 
 		break;
 	case c_none:
-		moveFigure(figure, *field);
+		moveFigure(figure);
 	default:
 		break;
 	}

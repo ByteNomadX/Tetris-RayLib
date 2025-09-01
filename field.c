@@ -2,7 +2,7 @@
 #include "./headers/field.h"
 #include "./headers/figure.h"
 
-Field* initField(int width, int height, int blockSize) {
+Field* initField() {
   Field* field = malloc(sizeof(Field));
 
   field->size.x = count_cols * block_size;

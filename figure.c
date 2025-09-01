@@ -5,13 +5,15 @@
 
 #include "./headers/figure.h"
 
-static const char* figure_i[] = {"1111", "1 1 1 1", NULL};
-static const char* figure_o[] = {"11 11", NULL};
-static const char* figure_t[] = {"111 010", "10 11 10", "010 111", "01 11 01", NULL};
-static const char* figure_s[] = {"011 110", "10 11 01", NULL};
-static const char* figure_z[] = {"110 011", "01 11 10", NULL};
-static const char* figure_l[] = {"100 111", "11 10 10", "111 001", "01 01 11", NULL};
-static const char* figure_j[] = {"001 111", "10 10 11", "111 100", "11 01 01", NULL};
+static const char* figure_map_i[] = {"1111", "1 1 1 1", NULL};
+static const char* figure_map_o[] = {"11 11", NULL};
+static const char* figure_map_t[] = {"111 010", "10 11 10", "010 111", "01 11 01", NULL};
+static const char* figure_map_s[] = {"011 110", "10 11 01", NULL};
+static const char* figure_map_z[] = {"110 011", "01 11 10", NULL};
+static const char* figure_map_l[] = {"100 111", "11 10 10", "111 001", "01 01 11", NULL};
+static const char* figure_map_j[] = {"001 111", "10 10 11", "111 100", "11 01 01", NULL};
+
+static const int offset_shadow = 3;
 
 int getMapLength(const char* map) {
   char ch = map[0];
@@ -30,30 +32,29 @@ void setFigureColor(Figure* figure) {
   int i;
   Color color;
   switch (figure->type) {
-    case 'i':
+    case figure_i:
       color = LIME;
       break;
-    case 'o':
+    case figure_o:
       color = DARKPURPLE;
       break;
-    case 't':
+    case figure_t:
       color = PURPLE;
       break;
-    case 's':
+    case figure_s:
       color = GREEN;
       break;
-    case 'z':
+    case figure_z:
       color = RED;
       break;
-    case 'l':
+    case figure_l:
       color = ORANGE;
       break;
-    case 'j':
+    case figure_j:
       color = BLUE;
       break;
     default:
       return;
-      break;
   }
 
   for(i = 0; i < figure->countBlocks; i++) {
@@ -68,7 +69,9 @@ Block* getFigureBlocks(const char* map, int length, Vector2 fieldPos) {
   int x, y = fieldPos.y;
   Block* blocks = MemAlloc(sizeof(Block) * length);
 
-  for(i = 0, counter = 0, arrIndex = 0; i < strlen(map); i++) {
+	int len = strlen(map);
+
+  for(i = 0, counter = 0, arrIndex = 0; i < len; i++) {
     x = block_size * counter + fieldPos.x;
 
     ch = map[i];
@@ -137,7 +140,7 @@ int rotateFigure(Figure* figure, Field field) {
   for(i = 0; i < newBlocksLength; i++) {
     for(j = 0; j < field.occupiedBlocksCount; j++) {
       if(CheckCollisionRecs(newBlocks[i].rec, field.occupiedBlocks[j].rec)) {
-        free(newBlocks);
+        MemFree(newBlocks);
         figure->mapIndex = prevMapIndex;
         return 1;
       }
@@ -156,7 +159,7 @@ int rotateFigure(Figure* figure, Field field) {
       for (j = 0; j < newBlocksLength; j++) newBlocks[j].rec.y += block_size;
     }
 
-  free(figure->blocks);
+  MemFree(figure->blocks);
   figure->blocks = NULL;
 
   figure->blocks = newBlocks;
@@ -186,7 +189,7 @@ CollisionType checkFigureCollision(Figure figure, Field field) {
   return c_none;
 }
 
-Figure* createFigure(const char** maps, const char type, int mapsC, Vector2 fieldPos) {
+Figure* createFigure(const char** maps, FigureType type, int mapsC, Vector2 fieldPos) {
   int i;
 
   Figure* figure = MemAlloc(sizeof(Figure));
@@ -197,7 +200,7 @@ Figure* createFigure(const char** maps, const char type, int mapsC, Vector2 fiel
   figure->mapLength = mapsC;
   figure->mapsLength = MemAlloc(sizeof(int) * mapsC);
 
-  figure->maps = MemAlloc(sizeof(char*) * mapsC);
+  figure->maps = MemAlloc(sizeof(const char*) * mapsC);
   
   for(i = 0; i < mapsC; i++) {
     figure->mapsLength[i] = getMapLength(maps[i]);
@@ -214,31 +217,31 @@ Figure* createFigure(const char** maps, const char type, int mapsC, Vector2 fiel
 }
 
 
-void moveFigure(Figure* figure, Field field) {
+void moveFigure(Figure* figure) {
   int i;
 
   for(i = 0; i < figure->countBlocks; i++) {
     figure->blocks[i].rec.y += figure->dir.y * block_size;
     figure->blocks[i].rec.x += figure->dir.x * block_size;
   }
-
 }
 
 void drawFigure(Figure figure, int maxY, int maxX) {
   int i;
   Block block;
-  int offsetShadowY = 1, offsetShadowX = 3;
+
+	int offsetShadowX, offsetShadowY;
 
   for(i = 0; i < figure.countBlocks; i++) {
     block = figure.blocks[i];
 
     if(block.rec.y + block_size >= maxY) 
       offsetShadowY = 0;
-    else offsetShadowY = 3;
+    else offsetShadowY = offset_shadow;
 
     if(block.rec.x + block_size >= maxX) 
       offsetShadowX = 0; 
-    else offsetShadowX = 3;
+    else offsetShadowX = offset_shadow;
     
     DrawRectangle(block.rec.x + offsetShadowX, block.rec.y + offsetShadowY, block.rec.width, block.rec.height, (Color){0, 0, 0, 60}); // shadow
     DrawRectangle(block.rec.x, block.rec.y, block.rec.width, block.rec.height, block.color);
@@ -246,33 +249,31 @@ void drawFigure(Figure figure, int maxY, int maxX) {
   }
 }
 
-const char** getFigureMap(const char type) {
+const char** getFigureMap(FigureType type) {
   switch (type) {
-    case 'i':
-      return figure_i;
-    case 'o':
-      return figure_o;
-    case 't':
-      return figure_t;
-    case 's':
-      return figure_s;
-    case 'z':
-      return figure_z;
-    case 'l':
-      return figure_l;
-    case 'j':
-      return figure_j;
+    case figure_i:
+      return figure_map_i;
+    case figure_o:
+      return figure_map_o;
+    case figure_t:
+      return figure_map_t;
+    case figure_s:
+      return figure_map_s;
+    case figure_z:
+      return figure_map_z;
+    case figure_l:
+      return figure_map_l;
+    case figure_j:
+      return figure_map_j;
     default:
       return NULL;
-      break;
   }
 }
 
 Figure* getRandomFigure(Vector2 fieldPos) {
-  int types[] = {'i','o','t','s','z','l','j'};
   int length = 0;
     
-  const char type = types[GetRandomValue(0, 6)];
+  FigureType type = GetRandomValue(figure_i, figure_z);
   const char** maps = getFigureMap(type);
   while(maps[length] != NULL) {
     length++;
@@ -283,10 +284,10 @@ Figure* getRandomFigure(Vector2 fieldPos) {
 
 void freeFigure(Figure* figure) {
 	if (!figure) return;
-	free(figure->blocks);
-	free(figure->maps);
-	free(figure->mapsLength);
-	free(figure);
+	MemFree(figure->blocks);
+	MemFree(figure->maps);
+	MemFree(figure->mapsLength);
+	MemFree(figure);
 }
 
 void drawFigurePath(Figure figure, Field field) {
@@ -296,7 +297,7 @@ void drawFigurePath(Figure figure, Field field) {
   Block block;
 
   figurePath.countBlocks = figure.countBlocks;
-  figurePath.blocks = malloc(sizeof(Block) * figure.countBlocks);
+  figurePath.blocks = MemAlloc(sizeof(Block) * figure.countBlocks);
   figurePath.dir = (Vector2){0, 1};
 
   Color color = (Color){0,0,0,25};
@@ -313,7 +314,7 @@ void drawFigurePath(Figure figure, Field field) {
 
   for(i = 0; i < figurePath.countBlocks; i++) {
     if(figure.blocks[i].rec.y >= figurePath.blocks[i].rec.y - block_size) {
-			free(figurePath.blocks);
+			MemFree(figurePath.blocks);
       return;
     }
   }
@@ -323,5 +324,5 @@ void drawFigurePath(Figure figure, Field field) {
     DrawRectangle(block.rec.x, block.rec.y, block.rec.width, block.rec.height, color);
   }
 
-  free(figurePath.blocks);
+  MemFree(figurePath.blocks);
 }
