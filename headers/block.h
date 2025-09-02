@@ -3,7 +3,7 @@
 
 #include <raylib.h>
 
-enum { block_size = 24 };
+enum { block_size = 26 };
 
 typedef struct block {
   Color color;
