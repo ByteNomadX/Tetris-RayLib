@@ -295,7 +295,7 @@ void drawFigurePath(Figure figure, Field field) {
   figurePath.blocks = MemAlloc(sizeof(Block) * figure.countBlocks);
   figurePath.dir = (Vector2){0, 1};
 
-  Color color = (Color){0,0,0,25};
+  Color color = ColorAlpha(figure.blocks[0].color, .20f);
   
   for(i = 0; i < figure.countBlocks; i++) {
     figurePath.blocks[i].rec = figure.blocks[i].rec;
