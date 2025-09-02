@@ -3,10 +3,7 @@
 #include "./headers/figure.h"
 #include "./headers/field.h"
 
-const static int top_panel_width = 300;
-const static int top_panel_height = 300;
-const static int top_panel_x = width - top_panel_width - 100;
-const static int top_panel_y = block_size * 2;
+#include <math.h>
 
 const static int font_size_big = 52;
 const static int font_size_mid = 46;
@@ -14,98 +11,113 @@ const static int font_size_norm = 32;
 const static int font_size_sm = 24;
 const static int font_size_vrysm = 18;
 
-const static int bottom_panel_width = 300;
-const static int bottom_panel_height = 156;
-const static int bottom_panel_x = width - bottom_panel_width - 100;
-const static int bottom_panel_y = top_panel_y + top_panel_height + 20;
+
+const static Rectangle topPanel = (Rectangle){width - 400, block_size * 2, 300, 300};
+const static Rectangle bottomPanel = (Rectangle){width - 400, topPanel.y + topPanel.height + 40, 300, 156};
+
 
 static const Color background_color = (Color){30, 30, 30, 100};
 
-typedef enum h_alignment {start, center, end} h_alignment;
+typedef enum h_alignment {start, end} h_alignment;
 
-void drawText(const char *text, int posX, int posY, int fontSize, Color color, h_alignment alignment) {
-	switch (alignment)
-	{
-	case start:
-		DrawText(text, posX, posY, fontSize, color);
-		break;
-	case center:
-		DrawText(text, posX - MeasureText(text, fontSize) / 2, posY, fontSize, color);
-		break;
-	case end:
-		DrawText(text, posX - MeasureText(text, fontSize), posY, fontSize, color);
-		break;
-	default:
-		break;
+void drawText(const char *text, int posX, int posY, int fontSize, Color color) {
+	DrawText(text, posX - MeasureText(text, fontSize) / 2, posY, fontSize, color);
+}
+
+void drawBackgroundPattern() {
+	ClearBackground(RAYWHITE);
+
+	int gap = 60;
+	for(int y = 0; y < height; y += gap) {
+		for(int x = 0; x < width; x += gap) {
+			DrawRectangleLines(x, y, gap, gap, (Color){220, 220, 220, 70});
+		}
 	}
+}
+
+void drawFloatingText(const char *text, int posX, int posY, int fontSize, Color baseColor, float speed) {
+	float t = (float)GetTime();
+	float alpha = 80 + (sinf(t * speed) * 0.5f + 0.5f) * (255 - 80);
+	Color c = {baseColor.r, baseColor.g, baseColor.b, (unsigned char)alpha};
+	drawText(text, posX, posY, fontSize, c);
 }
 
 void drawWelcomeScreen() {  
   BeginDrawing();
-  ClearBackground(background_color); 
+	drawBackgroundPattern();
+
+	drawText("TETRIS", width / 2, 150, font_size_big, (Color){50, 50, 50, 255});
+	drawText("The timeless puzzle", width / 2, 150 + font_size_big + 20, font_size_sm, (Color){120, 120, 120, 255});
 	
-  drawText("TETRIS", width / 2, 100, font_size_big, PINK, center);
-  drawText("Good game", width - 10, height - 50, font_size_mid, PINK, end);
-  drawText("PRESS [ENTER] TO START!", width / 2, height / 2, font_size_norm, GREEN, center);
+	drawFloatingText("PRESS [ENTER] TO START", width / 2, height / 2, font_size_norm, (Color){100, 150, 220, 255}, 1.5f);
+
+	drawText("By: ByteNomadX", width / 2, height - 60, font_size_vrysm, (Color){150, 150, 150, 255});
+	drawText("Press [ESC] to exit", width / 2, height - 35, font_size_vrysm, (Color){150, 150, 150, 255});
+
   EndDrawing();
 }
 
 void drawGameOverScreen(int score) {
   BeginDrawing();
-  ClearBackground(background_color); 
-  drawText("GAME OVER!", width / 2, 150, font_size_mid, RED, center);
 
-  drawText(TextFormat("SCORE: %d", score), width / 2, 230, font_size_mid, GREEN, center);
+  drawBackgroundPattern(); 
+  drawText("GAME OVER!", width / 2, 150, font_size_mid, (Color){50, 50, 50, 255});
 
-  drawText("press [ESCAPE] to exit", width / 2, height / 2, font_size_sm, WHITE, center);
+	drawFloatingText("PRESS [ENTER] TO RESTART", width / 2, height / 2, font_size_sm, (Color){100, 150, 220, 255}, 1.5f);
 
-  drawText("press [ENTER] to restart", width / 2, height / 2 + 25, font_size_sm, WHITE, center);
+	drawText(TextFormat("SCORE: %d", score), width / 2, 230, font_size_mid, (Color){80, 80, 80, 255});
+
+	drawText("Press [ESC] to exit", width / 2, height / 2 + 40, font_size_sm, (Color){120, 120, 120, 255});
+
   EndDrawing();
 } 
 
 void drawPauseScreen() {
   BeginDrawing();
-  ClearBackground(background_color); 
-  drawText("PAUSE", width / 2, 150, font_size_mid, RED, center);
+	drawBackgroundPattern();
+	drawText("PAUSE", width / 2, 150, font_size_mid, (Color){50, 50, 50, 255});
 
-  drawText("press [ESCAPE] to exit", width / 2, height / 2, font_size_sm, WHITE, center);
-
-  drawText("press [ENTER] to continue", width / 2, height / 2 + 25, font_size_sm, WHITE, center);
-
-  drawText("press [R] to restart", width / 2, height / 2 + 50, font_size_sm, WHITE, center);
+	
+  drawFloatingText("press [ENTER] to continue", width / 2, height / 2 , font_size_sm, 
+		(Color){100, 150, 220, 255}, 1.5f);
+		
+	drawText("Press [R] to restart", width / 2, height / 2 + 40, font_size_sm, (Color){120, 120, 120, 255});
+	drawText("Press [ESC] to exit", width / 2, height / 2 + 70, font_size_sm, (Color){120, 120, 120, 255});
 
   EndDrawing();
 }
 
 void drawTopPanelBackground() {
-  DrawRectangle(top_panel_x, top_panel_y, top_panel_width, top_panel_height, (Color){0, 0, 0, 20}); 
-  DrawRectangleLines(top_panel_x, top_panel_y, top_panel_width, top_panel_height, (Color){200, 200, 200, 255});
+	DrawRectangleRounded(topPanel, 0.02f, 0, WHITE);
+	DrawRectangleRoundedLines(topPanel, 0.02f, 0, 2, LIGHTGRAY);
 }
 
 void drawBottomPanelBackground() {
-  DrawRectangle(bottom_panel_x, bottom_panel_y, bottom_panel_width, bottom_panel_height, (Color){0, 0, 0, 20}); 
-  DrawRectangleLines(bottom_panel_x, bottom_panel_y, bottom_panel_width, bottom_panel_height, (Color){200, 200, 200, 255});   
+	DrawRectangleRounded(bottomPanel, 0.02f, 0, WHITE);
+	DrawRectangleRoundedLines(bottomPanel, 0.05f, 0, 2, LIGHTGRAY);
 }
 
 void drawInfo() {
-	drawText("Press [P] to pause", bottom_panel_x + bottom_panel_width / 2, bottom_panel_y + 20, font_size_vrysm, BLACK, center);
-	drawText("Press [M] to PLAY/STOP music", bottom_panel_x + bottom_panel_width / 2, bottom_panel_y + 48, font_size_vrysm, BLACK, center);
-	drawText("Press [S] to PLAY/STOP sounds", bottom_panel_x + bottom_panel_width / 2, bottom_panel_y + 68, font_size_vrysm, BLACK, center);
-	drawText("by ByteNomadX", bottom_panel_x + bottom_panel_width / 2, bottom_panel_y + bottom_panel_height - 26, font_size_vrysm, BLACK, center);
+	Color textColor = (Color){80, 80, 80, 255};
+
+	drawText("Press [P] to pause", bottomPanel.x + bottomPanel.width / 2, bottomPanel.y + 20, font_size_vrysm, textColor);
+	drawText("Press [M] to PLAY/STOP music", bottomPanel.x + bottomPanel.width / 2, bottomPanel.y + 48, font_size_vrysm, textColor);
+	drawText("Press [S] to PLAY/STOP sounds", bottomPanel.x + bottomPanel.width / 2, bottomPanel.y + 68, font_size_vrysm, textColor);
+	drawText("by ByteNomadX", bottomPanel.x + bottomPanel.width / 2, bottomPanel.y + bottomPanel.height - 26, font_size_vrysm, textColor);
 }
 
 void drawNextFigure(Figure figure) {
   int i;
-  drawText("Next", (top_panel_x + top_panel_width / 2), top_panel_y + 180, font_size_norm, DARKGRAY, center);
+  drawText("Next", (topPanel.x + topPanel.width / 2), topPanel.y + 180, font_size_norm, DARKGRAY);
 
-  int maxX = figure.blocks[0].rec.x;
+  float maxX = figure.blocks[0].rec.x;
   for (i = 0; i < figure.countBlocks; i++) {
     if (figure.blocks[i].rec.x > maxX) {
       maxX = figure.blocks[i].rec.x;
     }
   }
 
-  Vector2 pos = (Vector2){top_panel_x + top_panel_width / 2 - maxX / 2 + block_size, top_panel_y + 180};
+  Vector2 pos = (Vector2){(topPanel.x + topPanel.width / 2) - maxX / 2 + block_size / 2, topPanel.y + 200};
   
   for (i = 0; i < figure.countBlocks; i++) {
     DrawRectangle(figure.blocks[i].rec.x - field_pos_x + 2 + pos.x, figure.blocks[i].rec.y + 2 + pos.y, figure.blocks[i].rec.width, figure.blocks[i].rec.height, (Color){0, 0, 0, 30});
@@ -116,23 +128,25 @@ void drawNextFigure(Figure figure) {
   }
 }
 
-void drawDividers() {
-  int line_x_start = top_panel_x + 10;
-  int line_x_end = top_panel_x + top_panel_width - 10;
+void drawStats(int score, int lines, int figuresPlaced) {
+	drawText(TextFormat("Lines: %d", lines), (topPanel.x + topPanel.width / 2), topPanel.y + 70, font_size_norm, DARKGRAY);
+	drawText(TextFormat("Placed: %d", figuresPlaced), (topPanel.x + topPanel.width / 2), topPanel.y + 120, font_size_norm, DARKGRAY);
+  drawText(TextFormat("Score: %d", score), (topPanel.x + topPanel.width / 2), topPanel.y + 20, font_size_norm, DARKGRAY);
+}
 
-  DrawLine(line_x_start, top_panel_y + 60, line_x_end, top_panel_y + 60, DARKGRAY);  
-  DrawLine(line_x_start, top_panel_y + 110, line_x_end, top_panel_y + 110, DARKGRAY);
-  DrawLine(line_x_start, top_panel_y + 160, line_x_end, top_panel_y + 160, DARKGRAY);
+void drawDividers() {
+  int line_x_start = topPanel.x + 10;
+  int line_x_end = topPanel.x + topPanel.width - 10;
+
+  DrawLine(line_x_start, topPanel.y + 60, line_x_end, topPanel.y + 60, DARKGRAY);  
+  DrawLine(line_x_start, topPanel.y + 110, line_x_end, topPanel.y + 110, DARKGRAY);
+  DrawLine(line_x_start, topPanel.y + 160, line_x_end, topPanel.y + 160, DARKGRAY);
 }
 
 void drawGameplayUI(int score, int lines, int figuresPlaced, Figure nextFigure) {
   drawTopPanelBackground();
   drawBottomPanelBackground();
-  
-	drawText(TextFormat("Lines: %d", lines), (top_panel_x + top_panel_width / 2), top_panel_y + 70, font_size_norm, DARKGRAY, center);
-	drawText(TextFormat("Placed: %d", figuresPlaced), (top_panel_x + top_panel_width / 2), top_panel_y + 120, font_size_norm, DARKGRAY, center);
-  drawText(TextFormat("Score: %d", score), (top_panel_x + top_panel_width / 2), top_panel_y + 20, font_size_norm, DARKGRAY, center);
-
+  drawStats(score, lines, figuresPlaced);
 	drawNextFigure(nextFigure);
   drawInfo();
   drawDividers();
