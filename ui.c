@@ -11,12 +11,8 @@ const static int font_size_norm = 32;
 const static int font_size_sm = 24;
 const static int font_size_vrysm = 18;
 
-
 const static Rectangle topPanel = (Rectangle){width - 400, block_size * 2, 300, 300};
 const static Rectangle bottomPanel = (Rectangle){width - 400, topPanel.y + topPanel.height + 40, 300, 156};
-
-
-static const Color background_color = (Color){30, 30, 30, 100};
 
 typedef enum h_alignment {start, end} h_alignment;
 
@@ -61,12 +57,9 @@ void drawGameOverScreen(int score) {
   BeginDrawing();
 
   drawBackgroundPattern(); 
-  drawText("GAME OVER!", width / 2, 150, font_size_mid, (Color){50, 50, 50, 255});
-
-	drawFloatingText("PRESS [ENTER] TO RESTART", width / 2, height / 2, font_size_sm, (Color){100, 150, 220, 255}, 1.5f);
-
+  drawText("GAME OVER!", width / 2, 150, font_size_mid, RED);
 	drawText(TextFormat("SCORE: %d", score), width / 2, 230, font_size_mid, (Color){80, 80, 80, 255});
-
+	drawFloatingText("PRESS [ENTER] TO RESTART", width / 2, height / 2, font_size_sm, (Color){100, 150, 220, 255}, 1.5f);
 	drawText("Press [ESC] to exit", width / 2, height / 2 + 40, font_size_sm, (Color){120, 120, 120, 255});
 
   EndDrawing();
@@ -110,21 +103,22 @@ void drawNextFigure(Figure figure) {
   int i;
   drawText("Next", (topPanel.x + topPanel.width / 2), topPanel.y + 180, font_size_norm, DARKGRAY);
 
-  float maxX = figure.blocks[0].rec.x;
-  for (i = 0; i < figure.countBlocks; i++) {
-    if (figure.blocks[i].rec.x > maxX) {
-      maxX = figure.blocks[i].rec.x;
-    }
-  }
+	float maxX = figure.blocks[0].rec.x - field_pos_x + block_size;
 
-  Vector2 pos = (Vector2){(topPanel.x + topPanel.width / 2) - maxX / 2 + block_size / 2, topPanel.y + 200};
-  
+	for(i = 0; i < figure.countBlocks; i++) {
+		if((figure.blocks[i].rec.x - field_pos_x + block_size) > maxX) {
+			maxX = figure.blocks[i].rec.x - field_pos_x + block_size;
+		}
+	}
+
   for (i = 0; i < figure.countBlocks; i++) {
-    DrawRectangle(figure.blocks[i].rec.x - field_pos_x + 2 + pos.x, figure.blocks[i].rec.y + 2 + pos.y, figure.blocks[i].rec.width, figure.blocks[i].rec.height, (Color){0, 0, 0, 30});
-    
-    DrawRectangle(figure.blocks[i].rec.x - field_pos_x + pos.x, figure.blocks[i].rec.y + pos.y, figure.blocks[i].rec.width, figure.blocks[i].rec.height, figure.blocks[i].color);
-    
-    DrawRectangleLinesEx((Rectangle){figure.blocks[i].rec.x - field_pos_x + pos.x, figure.blocks[i].rec.y + pos.y, figure.blocks[i].rec.width, figure.blocks[i].rec.height}, 1, WHITE);
+		Rectangle rec = figure.blocks[i].rec;
+		Color color = figure.blocks[i].color;
+
+		Vector2 pos = (Vector2){topPanel.x + topPanel.width / 2 - maxX / 2, topPanel.y + 200};
+
+    DrawRectangle(rec.x - field_pos_x + pos.x, rec.y + pos.y, rec.width, rec.height, color);
+    DrawRectangleLinesEx((Rectangle){rec.x - field_pos_x + pos.x, rec.y + pos.y, rec.width, rec.height}, 1, WHITE);
   }
 }
 
