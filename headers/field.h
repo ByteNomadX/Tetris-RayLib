@@ -11,9 +11,8 @@ typedef struct Field {
   int occupiedBlocksCount;
 } Field;
 
-enum { count_rows = 20, count_cols = 10 };
+enum { count_rows = 20, count_cols = 10, field_pos_x = 90 };
 
-extern const int field_pos_x;
 extern const int field_pos_y;
 
 void drawField(Field field);

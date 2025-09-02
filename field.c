@@ -1,9 +1,10 @@
 #include <stdlib.h>
+
 #include "./headers/field.h"
 #include "./headers/figure.h"
+#include "./headers/config.h"
 
-const int field_pos_x = block_size * 3;
-const int field_pos_y = block_size * 2;
+const int field_pos_y = (height - (count_rows * block_size)) / 2;
 
 Field* initField() {
   Field* field = malloc(sizeof(Field));
@@ -23,29 +24,31 @@ Field* initField() {
 }
 
 void drawField(Field field) {
-    int i;
-    int blockX, blockY;
-    int counter = 0;
-    
-    blockY = field.pos.y;
-    for(i = 0; i < field.blockCount; i++) {
-      if(i > 0 && i % count_cols == 0) {
-        blockY += block_size;
-        counter = 0;
-      }
+	int i;
+	int blockX, blockY;
+	int counter = 0;
+	
+	blockY = field.pos.y;
+	for(i = 0; i < field.blockCount; i++) {
+		if(i > 0 && i % count_cols == 0) {
+			blockY += block_size;
+			counter = 0;
+		}
 
-      blockX = field.pos.x + counter * block_size;
+		blockX = field.pos.x + counter * block_size;
 
-      DrawRectangleLinesEx((Rectangle){blockX, blockY, block_size, block_size}, 1, LIGHTGRAY);
+		DrawRectangleLinesEx((Rectangle){blockX, blockY, block_size, block_size}, 1, LIGHTGRAY);
 
-      counter++;
-    }
-    
-    for(i = 0; i < field.occupiedBlocksCount; i++) {
-      DrawRectangle(field.occupiedBlocks[i].rec.x, field.occupiedBlocks[i].rec.y, field.occupiedBlocks[i].rec.width, field.occupiedBlocks[i].rec.height, field.occupiedBlocks[i].color);
-      
-      DrawRectangleLinesEx(field.occupiedBlocks[i].rec, 1, LIGHTGRAY);
-    }
+		counter++;
+	}
+	
+	for(i = 0; i < field.occupiedBlocksCount; i++) {
+		Color color = field.occupiedBlocks[i].color;
+		Rectangle rec = field.occupiedBlocks[i].rec;
+
+		DrawRectangle(rec.x, rec.y, rec.width, rec.height, color);
+		DrawRectangleLinesEx(rec, 1, LIGHTGRAY);
+	}
 }
 
 void removeFieldLine(Field* field, int lineY) {
