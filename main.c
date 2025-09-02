@@ -26,6 +26,7 @@ static bool gameStarted;
 
 static bool pause;
 static bool musicPaused;
+static bool movedDown;
 static Figure* figure;
 static Figure* nextFigure;
 static Bag* bag;
@@ -96,6 +97,7 @@ void initGame() {
   pause = false;
   musicPaused = false;
 	soundsPaused = false;
+	movedDown = false;
   linesToDelete = false;
 
   lineFadingTime = 0;
@@ -163,6 +165,7 @@ void update() {
 	}
 	
 	UpdateMusicStream(music);
+	movedDown = false;
 
 	figure->dir = (Vector2){0,0};
 	
@@ -218,6 +221,7 @@ void update() {
 		} else if(IsKeyDown(KEY_DOWN)) {
 			figure->dir = (Vector2){0, 1};
 			fallingTime = 0;
+			movedDown = true;
 			moveFigureTime = 0;
 		}
 	}
@@ -240,6 +244,7 @@ void update() {
 	if(fallingTime >= 1.0f) {
 		figure->dir = (Vector2){0, 1};
 		fallingTime = 0;
+		movedDown = true;
 	}
 
 	switch (checkFigureCollision(*figure, *field))
@@ -248,7 +253,7 @@ void update() {
 	case c_hor_wall_right:
 		break;
 	case c_block:
-
+		if(!movedDown) break;
 	case c_down_wall:
 		playSound(figurePlacedSound);
 		appendFigureToField(figure, field);
@@ -274,20 +279,19 @@ void update() {
 		}    
 
 		if(filledLines > 0) {
-			switch (filledLines)
-			{
-			case 1:
-				playSound(lineClearSingleSound);
-				break;
-			case 2:
-				playSound(lineClearDoubleSound);
-				break;
-			case 3:
-				playSound(lineClearTripleSound);
-				break;
-			case 4:
-				playSound(lineClearQuadSound);
-				break;
+			switch (filledLines) {
+				case 1:
+					playSound(lineClearSingleSound);
+					break;
+				case 2:
+					playSound(lineClearDoubleSound);
+					break;
+				case 3:
+					playSound(lineClearTripleSound);
+					break;
+				case 4:
+					playSound(lineClearQuadSound);
+					break;
 			}
 			linesToDelete = true;
 			lines += filledLines;
@@ -295,12 +299,12 @@ void update() {
 		}
 	
 		figuresPlaced++;
+		break;
 
-		break;
-	case c_none:
-		moveFigure(figure);
-	default:
-		break;
+		case c_none:
+			moveFigure(figure);
+		default:
+			break;
 	}
 
 	if(IsKeyPressed(KEY_M)) {
