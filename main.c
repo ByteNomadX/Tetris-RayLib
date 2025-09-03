@@ -220,6 +220,9 @@ void update() {
 			fallingTime = 0;
 			movedDown = true;
 			moveFigureDownTime = 0;
+		} else if(IsKeyReleased(KEY_SPACE)) {
+			placeFigureDown(figure, *field);
+			movedDown = true;
 		}
 	}
 

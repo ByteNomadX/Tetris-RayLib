@@ -14,8 +14,6 @@ const static int font_size_vrysm = 18;
 const static Rectangle topPanel = (Rectangle){width - 400, block_size * 2, 300, 300};
 const static Rectangle bottomPanel = (Rectangle){width - 400, topPanel.y + topPanel.height + 40, 300, 156};
 
-typedef enum h_alignment {start, end} h_alignment;
-
 void drawText(const char *text, int posX, int posY, int fontSize, Color color) {
 	DrawText(text, posX - MeasureText(text, fontSize) / 2, posY, fontSize, color);
 }

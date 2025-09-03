@@ -285,6 +285,17 @@ void freeFigure(Figure* figure) {
 	MemFree(figure);
 }
 
+void placeFigureDown(Figure* figure, Field field) {
+	int i;
+	figure->dir = (Vector2){0, 1};
+
+	while (checkFigureCollision(*figure, field) == c_none) {
+    for(i = 0; i < figure->countBlocks; i++) {
+      figure->blocks[i].rec.y += block_size;
+    }      
+  }
+} 
+
 void drawFigurePath(Figure figure, Field field) {
   int i;
 
@@ -293,7 +304,6 @@ void drawFigurePath(Figure figure, Field field) {
 
   figurePath.countBlocks = figure.countBlocks;
   figurePath.blocks = MemAlloc(sizeof(Block) * figure.countBlocks);
-  figurePath.dir = (Vector2){0, 1};
 
   Color color = ColorAlpha(figure.blocks[0].color, .20f);
   
@@ -301,14 +311,10 @@ void drawFigurePath(Figure figure, Field field) {
     figurePath.blocks[i].rec = figure.blocks[i].rec;
   }
 
-  while (checkFigureCollision(figurePath, field) == c_none) {
-    for(i = 0; i < figurePath.countBlocks; i++) {
-      figurePath.blocks[i].rec.y += block_size;
-    }      
-  }
+  placeFigureDown(&figurePath, field);
 
   for(i = 0; i < figurePath.countBlocks; i++) {
-    if(figure.blocks[i].rec.y >= figurePath.blocks[i].rec.y - block_size) {
+    if(figure.blocks[i].rec.y >= figurePath.blocks[i].rec.y) {
 			MemFree(figurePath.blocks);
       return;
     }

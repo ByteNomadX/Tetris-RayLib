@@ -38,5 +38,6 @@ void freeFigure(Figure* figure);
 const char** getFigureMap(FigureType type);
 int getMapLength(const char* map);
 void drawFigurePath(Figure figure, Field field);
+void placeFigureDown(Figure* figure, Field field);
 
 #endif
