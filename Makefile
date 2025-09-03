@@ -13,8 +13,8 @@ ifeq ($(DEBUG),1)
 	FLAGS := $(FLAGS) $(DEBUG_FLAGS)
 endif
 
-$(EXEC): $(SRC).o ui.o figure.o field.o bag.o
-	$(CC) $(FLAGS) $(SRC).c ui.o bag.o figure.o field.o -o $(EXEC) $(INCLUDES) $(LIBS)
+$(EXEC): $(SRC).o ui.o figure.o field.o bag.o audio.o
+	$(CC) $(FLAGS) $(SRC).c ui.o bag.o figure.o field.o audio.o -o $(EXEC) $(INCLUDES) $(LIBS)
 
 $(SRC).o: $(SRC).c
 	$(CC) $(FLAGS) -c $(SRC).c $(INCLUDES)
@@ -30,6 +30,9 @@ field.o: field.c
 
 bag.o: bag.c
 	$(CC) $(FLAGS) -c bag.c $(INCLUDES)
+
+audio.o: audio.c
+	$(CC) $(FLAGS) -c audio.c $(INCLUDES)
 
 clean:
 	rm -rf *.o

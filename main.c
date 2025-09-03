@@ -7,6 +7,8 @@
 #include "./headers/figure.h"
 #include "./headers/field.h"
 
+#include "./headers/audio.h"
+
 #include "./headers/ui.h"
 
 #if defined(PLATFORM_WEB)
@@ -26,23 +28,13 @@ static bool gameOver;
 static bool gameStarted;
 
 static bool pause;
-static bool musicPaused;
 static bool movedDown;
 static Figure* figure;
 static Figure* nextFigure;
 static Bag* bag;
 
-static Music music;
-static Sound figurePlacedSound;
-static Sound figureRotateSound;
-static Sound figureRotateFailSound;
-
-static Sound lineClearSingleSound;
-static Sound lineClearDoubleSound;
-static Sound lineClearTripleSound;
-static Sound lineClearQuadSound;
-
-static Sound gameOverSound;
+static AudioManager* audioManager;
+static RepeatingSound* repeatingLineClearSound;
 
 static bool linesToDelete;
 static int lineFadingTime;
@@ -50,39 +42,10 @@ static int linesToDeleteArr[count_rows];
 
 static Color fadingColor;
 
-static bool soundsPaused;
-
 static const int fading_time = 55;
 static const float switch_figure_delay = 0.12f;
 static const float move_figure_h_delay = 0.051f;
 static const float move_figure_down_delay = 0.045f;
-
-void playSound(Sound sound) {
-	if(!soundsPaused) {
-		PlaySound(sound);
-	}
-}
-
-void initMusic() {
-  InitAudioDevice();
-  music = LoadMusicStream("./audio/Tetris.mp3");
-  music.looping = true;
-  SetMusicVolume(music, 0.1);
-}
-
-void initSounds() {
-  figurePlacedSound = LoadSound("./audio/figure_placed.wav");
-
-  figureRotateFailSound = LoadSound("./audio/rotate_fail.wav");
-  figureRotateSound = LoadSound("./audio/figure_rotate.wav");
-
-  lineClearSingleSound = LoadSound("./audio/line_clear_single.wav");
-  lineClearDoubleSound = LoadSound("./audio/line_clear_double.wav");
-  lineClearTripleSound = LoadSound("./audio/line_clear_triple.wav");
-  lineClearQuadSound = LoadSound("./audio/line_clear_quad.wav");
-
-  gameOverSound = LoadSound("./audio/game_over.wav");
-}
 
 void initGame() {
   field = initField();
@@ -98,8 +61,6 @@ void initGame() {
   gameOver = false;
 
   pause = false;
-  musicPaused = false;
-	soundsPaused = false;
 	movedDown = false;
   linesToDelete = false;
 
@@ -119,7 +80,7 @@ void restartGame() {
   freeField(field);
 	MemFree(bag);
 
-	SeekMusicStream(music, 0.0f);
+	SeekMusicStream(audioManager->music, 0.0f);
 
   initGame();
 }
@@ -130,7 +91,7 @@ void update() {
 
     if(IsKeyPressed(KEY_ENTER)) {
       gameStarted = true;
-      PlayMusicStream(music);
+      PlayMusicStream(audioManager->music);
     } else {
       return;
     }
@@ -151,8 +112,8 @@ void update() {
       exit(0);
     } else if(IsKeyPressed(KEY_ENTER)) {
       pause = false;
-			if(!musicPaused) {
-				ResumeMusicStream(music);
+			if(IsMusicStreamPlaying(audioManager->music)) {
+				ResumeMusicStream(audioManager->music);
 			}
     } else if(IsKeyPressed(KEY_R)) {
       restartGame();
@@ -163,11 +124,13 @@ void update() {
 
 	if(IsKeyPressed(KEY_P)) {
 		pause = true;
-		PauseMusicStream(music);
+		PauseMusicStream(audioManager->music);
 		return;
 	}
-	
-	UpdateMusicStream(music);
+
+	updateRepeatingSound(repeatingLineClearSound);
+	UpdateMusicStream(audioManager->music);
+
 	movedDown = false;
 
 	figure->dir = (Vector2){0,0};
@@ -239,9 +202,9 @@ void update() {
 	if(IsKeyDown(KEY_UP)) {
 		if(rotateFigureTime > switch_figure_delay) {
 			if(rotateFigure(figure, *field) == 1) {
-				playSound(figureRotateFailSound);
+				playSound(audioManager->figureRotateFail);
 			} else {
-				playSound(figureRotateSound);
+				playSound(audioManager->figureRotate);
 				rotateFigureTime = 0;
 			}
 		}  
@@ -266,7 +229,7 @@ void update() {
 	case c_block:
 		if(!movedDown) break;
 	case c_down_wall:
-		playSound(figurePlacedSound);
+		playSound(audioManager->figurePlaced);
 		appendFigureToField(figure, field);
 		freeFigure(figure); 
 
@@ -276,7 +239,7 @@ void update() {
 
 		if(checkFigureCollision(*figure, *field) == c_block) {
 			gameOver = true;
-			playSound(gameOverSound);
+			playSound(audioManager->gameOver);
 			return;
 		}
 
@@ -290,20 +253,9 @@ void update() {
 		}    
 
 		if(filledLines > 0) {
-			switch (filledLines) {
-				case 1:
-					playSound(lineClearSingleSound);
-					break;
-				case 2:
-					playSound(lineClearDoubleSound);
-					break;
-				case 3:
-					playSound(lineClearTripleSound);
-					break;
-				case 4:
-					playSound(lineClearQuadSound);
-					break;
-			}
+
+			triggerRepeatingSound(repeatingLineClearSound, filledLines);
+
 			linesToDelete = true;
 			lines += filledLines;
 			score += filledLines * 100;
@@ -319,11 +271,11 @@ void update() {
 	}
 
 	if(IsKeyPressed(KEY_M)) {
-		musicPaused ? ResumeMusicStream(music) : PauseMusicStream(music);
-
-		musicPaused = !musicPaused;
+		IsMusicStreamPlaying(audioManager->music) 
+		? PauseMusicStream(audioManager->music)
+		: ResumeMusicStream(audioManager->music); 
 	} else if(IsKeyPressed(KEY_S)) {
-		soundsPaused = !soundsPaused;		
+		toggleSounds();	
 	}
 
 	BeginDrawing();
@@ -334,13 +286,14 @@ void update() {
 	drawFigure(*figure, field_pos_y + field->size.y, field_pos_x + field->size.x);
 	drawFigurePath(*figure, *field);
 	EndDrawing();
-
 }
 
 int main() {
 	InitWindow(width, height, title);
-  initMusic();
-  initSounds();
+	
+	audioManager = createAudioManager(0.08);
+	repeatingLineClearSound = createRepeatingSound(audioManager->lineClear, 0.1f, 0.2f, 1.0f);
+
   initGame();
 #if defined(PLATFORM_WEB)
   emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
@@ -352,5 +305,4 @@ int main() {
     update();
   }
 #endif
-
 }
