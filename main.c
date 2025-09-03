@@ -19,7 +19,8 @@ static int lines;
 static int figuresPlaced;
 static float fallingTime;
 static float rotateFigureTime;
-static float moveFigureTime;
+static float moveFigureHorTime;
+static float moveFigureDownTime;
 
 static bool gameOver;
 static bool gameStarted;
@@ -53,7 +54,8 @@ static bool soundsPaused;
 
 static const int fading_time = 55;
 static const float switch_figure_delay = 0.12f;
-static const float move_figure_delay = 0.05f;
+static const float move_figure_h_delay = 0.051f;
+static const float move_figure_down_delay = 0.045f;
 
 void playSound(Sound sound) {
 	if(!soundsPaused) {
@@ -89,7 +91,8 @@ void initGame() {
 	figuresPlaced = 0;
   fallingTime = 0.0f;
   rotateFigureTime = 0.0f;
-  moveFigureTime = 0.0f;
+  moveFigureHorTime = 0.0f;
+	moveFigureDownTime = 0.0f;
 
   gameStarted = false;
   gameOver = false;
@@ -211,18 +214,22 @@ void update() {
 		}
 	}
 
-	if(moveFigureTime >= move_figure_delay) {
-		if(IsKeyDown(KEY_LEFT)) {
-			figure->dir = (Vector2){-1, 0};
-			moveFigureTime = 0;
-		} else if(IsKeyDown(KEY_RIGHT)) {
-			figure->dir = (Vector2){1, 0};
-			moveFigureTime = 0;
-		} else if(IsKeyDown(KEY_DOWN)) {
+	if(moveFigureDownTime >= move_figure_down_delay) {
+		if(IsKeyDown(KEY_DOWN)) {
 			figure->dir = (Vector2){0, 1};
 			fallingTime = 0;
 			movedDown = true;
-			moveFigureTime = 0;
+			moveFigureDownTime = 0;
+		}
+	}
+
+	if(moveFigureHorTime >= move_figure_h_delay) {
+		if(IsKeyDown(KEY_LEFT)) {
+			figure->dir = (Vector2){-1, 0};
+			moveFigureHorTime = 0;
+		} else if(IsKeyDown(KEY_RIGHT)) {
+			figure->dir = (Vector2){1, 0};
+			moveFigureHorTime = 0;
 		}
 	}
 
@@ -238,7 +245,8 @@ void update() {
 	}
 
 	rotateFigureTime += GetFrameTime();
-	moveFigureTime += GetFrameTime();
+	moveFigureHorTime += GetFrameTime();
+	moveFigureDownTime += GetFrameTime();
 	fallingTime += GetFrameTime();
 
 	if(fallingTime >= 1.0f) {
